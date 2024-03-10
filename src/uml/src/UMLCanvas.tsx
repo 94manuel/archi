@@ -51,6 +51,7 @@ const UMLCanvas: React.FC = () => {
   const [lineStyle, setLineStyle] = useState('dotted');
   const [lines, setLines] = useState<LineProps[]>([]);
   const [isLineModeEnabled, setIsLineModeEnabled] = useState(false);
+  const [isZoomModeEnabled, setIsZoomModeEnabled] = useState(true);
   const [isDrawingLine, setIsDrawingLine] = useState(false);
   const [lineStartPoint, setLineStartPoint] = useState<Point | null>(null);
   const [currentLine, setCurrentLine] = useState<LineProps | null>(null)
@@ -61,10 +62,12 @@ const UMLCanvas: React.FC = () => {
   useEffect(() => {
     // Inicializa el área SVG aquí si es necesario
     const svg = d3.select(svgRef.current);
-    /*const zoom = d3.zoom().on('zoom', (event) => {
-      d3.select(zoomRef.current).attr('transform', event.transform);
-    });
-    svg.call(zoom as any);*/
+    if(isZoomModeEnabled){
+      const zoom = d3.zoom().on('zoom', (event) => {
+        d3.select(zoomRef.current).attr('transform', event.transform);
+      });
+      svg.call(zoom as any);
+    }
   }, []);
 
   useEffect(() => {
@@ -341,6 +344,9 @@ const UMLCanvas: React.FC = () => {
   const toggleLineMode = () => {
     setIsLineModeEnabled(!isLineModeEnabled);
   };
+  const toggZoomMode = () => {
+    setIsZoomModeEnabled(!isZoomModeEnabled);
+  };
   // Función para manejar la adición de puntos de control a las líneas
   const handleLineClick = (lineIndex: number) => {
     const line: any = lines[lineIndex];
@@ -390,7 +396,7 @@ const UMLCanvas: React.FC = () => {
         </g>
       </svg>
 
-      <ToolPalette onAddBox={addBox} onChangeLineStyle={changeLineStyle} onToggleLineMode={toggleLineMode} isLineModeActive={!isLineModeEnabled} />
+      <ToolPalette onAddBox={addBox} onChangeLineStyle={changeLineStyle} onToggleLineMode={toggleLineMode} isLineModeActive={!isLineModeEnabled} onToggleZoomMode={toggZoomMode} isZoomModeActive={isZoomModeEnabled} />
     </div>
   );
 };

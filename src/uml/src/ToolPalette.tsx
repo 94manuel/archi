@@ -3,9 +3,11 @@ import React from 'react';
 const ToolPalette: React.FC<{
   onAddBox: () => void,
   onChangeLineStyle: (style: string) => void,
-  onToggleLineMode: () => void // Nuevo prop para manejar el modo de dibujo de líneas
-  isLineModeActive: boolean
-}> = ({ onAddBox, onChangeLineStyle, onToggleLineMode, isLineModeActive  }) => {
+  onToggleLineMode: () => void,
+  onToggleZoomMode: () => void,
+  isLineModeActive: boolean,
+  isZoomModeActive: boolean
+}> = ({ onAddBox, onChangeLineStyle, onToggleLineMode, isLineModeActive, onToggleZoomMode, isZoomModeActive }) => {
   return (
     <div className="tool-palette" style={{ padding: '10px', border: '1px solid #ccc', marginLeft: '20px' }}>
       <h3>Herramientas UML</h3>
@@ -19,6 +21,7 @@ const ToolPalette: React.FC<{
         </select>
       </div>
       <button onClick={onToggleLineMode}>{isLineModeActive ? "Desactivar" : "Activar"} Modo de Dibujo de Líneas</button>
+      <button onClick={onToggleZoomMode}>{isZoomModeActive ? "Desactivar" : "Activar"} zoom</button>
     </div>
   );
 };

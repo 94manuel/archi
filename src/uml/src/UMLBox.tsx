@@ -58,14 +58,14 @@ const UMLBox: React.FC<UMLBoxProps> = ({
             .on('start', function (event) {
                 // Obtiene la posición actual del cuadro antes de comenzar el arrastre
                 const { x, y } = event.subject;
-                console.log("boxRef")
-                console.log({ x, y })
 
                 d3.select(this).raise(); // Opcional: Trae al frente el cuadro UML actual al empezar a arrastrarlo
 
                 // Establece el desplazamiento inicial entre la posición del cursor y la posición del cuadro
-                event.subject.dx = event.x - x;
-                event.subject.dy = event.y - y;
+                if (!boxRef.current) return;
+                const rect = boxRef.current.getBoundingClientRect();
+                event.subject.dx = event.x - rect.left;
+                event.subject.dy = event.y - rect.top;
             })
             .on('drag', (event) => {// Usa el desplazamiento inicial para ajustar la nueva posición del cuadro durante el arrastre
                 const newX = event.x - event.subject.dx;
@@ -140,14 +140,15 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                 maxWidth = textWidth;
             }
         });
-        return maxWidth + 20; // Agregar un poco de margen
+        return maxWidth + 30; // Agregar un poco de margen
     };
 
     const computeMinHeight = (topTextArray: string[], bottomTextArray: string[]) => {
-        const itemHeight = 52; // Altura estimada por ítem, ajusta según el tamaño de fuente y el espaciado entre líneas
-        const titleHeight = 40; // Espacio asignado para el título, ajusta según sea necesario
+        const itemHeight = 55; // Altura estimada por ítem, ajusta según el tamaño de fuente y el espaciado entre líneas
+        const titleHeight = 45; // Espacio asignado para el título, ajusta según sea necesario
+        const bottomHeight = 45; // Espacio asignado para el título, ajusta según sea necesario
         // Calcula la altura total basada en el número de elementos en cada lista
-        const totalHeight = titleHeight + (topTextArray.length + bottomTextArray.length) * itemHeight + 20; // 20px para padding adicional
+        const totalHeight = titleHeight + (topTextArray.length + bottomTextArray.length) * itemHeight + 20 +bottomHeight; // 20px para padding adicional
         return totalHeight;
     };
 
@@ -185,6 +186,11 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                 height={initialHeight}
                 fill={boxColors[type] || 'blue'}
             />
+            {/* Título */}
+            <text x="5%" y="30" fill="black" textAnchor="middle" dominantBaseline="middle" fontSize="20">{title}</text>
+            {/* Línea debajo del título */}
+            <line x1="0" y1="40" x2={dimensions.width} y2="40" stroke="black" strokeWidth="2" />
+
             {/* Line to divide the box in half */}
             <line x1="0" y1={dimensions.height / 2} x2={dimensions.width} y2={dimensions.height / 2} stroke="black" strokeWidth="2" />
 
@@ -226,9 +232,6 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                 fill="red"
                 cursor="nwse-resize"
             />
-            {/* Título e icono */}
-            <text x="5" y="15" fill="white">{type === 'clase' ? 'C' : 'I'}</text> {/* Usa 'C' para clase e 'I' para interfaz */}
-            <text x="10" y="20" fill="black">{title}</text> {/* Posición ajustada para evitar superposiciones */}
         </g>
     );
 };
