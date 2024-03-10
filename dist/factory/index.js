@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ConcreteCreatorA_1 = require("./src/ConcreteCreatorA");
+const ConcreteCreatorB_1 = require("./src/ConcreteCreatorB");
+const creatorA = new ConcreteCreatorA_1.ConcreteCreatorA();
+console.log('Client: Testing client code with the first creator type...');
+console.log(creatorA.someOperation());
+const creatorB = new ConcreteCreatorB_1.ConcreteCreatorB();
+console.log('Client: Testing the same client code with the second creator type...');
+console.log(creatorB.someOperation());

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Adaptee_1 = require("./src/adapter/Adaptee");
+const Adapter_1 = require("./src/adapter/Adapter");
+const adaptee = new Adaptee_1.Adaptee();
+console.log('Adaptee interface is incompatible with the client.');
+console.log('Adaptee: ' + adaptee.specificRequest());
+const adapter = new Adapter_1.Adapter(adaptee);
+console.log('Client: But with adapter client can call it is method.');
+console.log('Adapter: ' + adapter.request());

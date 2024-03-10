@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ConcreteObserverA_1 = require("./src/observer/ConcreteObserverA");
+const ConcreteObserverB_1 = require("./src/observer/ConcreteObserverB");
+const ConcreteSubject_1 = require("./src/observer/ConcreteSubject");
+const subject = new ConcreteSubject_1.ConcreteSubject();
+const observer1 = new ConcreteObserverA_1.ConcreteObserverA();
+subject.attach(observer1);
+const observer2 = new ConcreteObserverB_1.ConcreteObserverB();
+subject.attach(observer2);
+subject.state = 2;
+subject.state = 3;

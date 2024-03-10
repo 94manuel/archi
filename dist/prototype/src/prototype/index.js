@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ComponentWithBackReference_1 = require("./ComponentWithBackReference");
+const ConcretePrototype_1 = require("./ConcretePrototype");
+const originalPrototype = new ConcretePrototype_1.ConcretePrototype();
+originalPrototype.id = '1';
+originalPrototype.component = new Date();
+originalPrototype.circularReference = new ComponentWithBackReference_1.ComponentWithBackReference(originalPrototype, 'Initial value');
+const clonedPrototype = originalPrototype.clone();
+console.log('Cloned Prototype ID:', clonedPrototype.id);
