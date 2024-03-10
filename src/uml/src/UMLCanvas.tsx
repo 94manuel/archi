@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import UMLBox, { Dimensions, Point, UMLBoxProps } from './UMLBox';
 import ToolPalette from './ToolPalette';
 import { Grid, AStarFinder } from 'pathfinding';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Line: React.FC<LineProps> = ({ startX, startY, endX, endY, controlX, controlY, style, color = "black" }) => {
   let d: string; // Este será el atributo 'd' del path de SVG
@@ -149,6 +150,8 @@ const UMLCanvas: React.FC = () => {
       initialWidth: 100,
       initialHeight: 50,
       topText: [`Top Box ${boxes.length + 1}`],
+      type: 'clase',
+      title: 'string',
       bottomText: [`Bottom Box ${boxes.length + 1}`],
       onDoubleClick: () => handleDoubleClick(`box-${boxes.length + 1}`),
       onUpdate: (data: { id: string; position: Point; dimensions: Dimensions; text: string[] }) => {
