@@ -58,7 +58,7 @@ class CLIApplication {
         return __awaiter(this, void 0, void 0, function* () {
             this.enquirer.prompt([
                 {
-                    type: "select", // 'select' es equivalente a 'list' en inquirer
+                    type: "select",
                     name: "pattern",
                     message: "¿Qué patrón de diseño te gustaría utilizar?",
                     choices: [
@@ -108,7 +108,7 @@ class CLIApplication {
             if (!this.UsingArchitecture) {
                 yield this.enquirer.prompt([
                     {
-                        type: "select", // 'select' es equivalente a 'list' en inquirer
+                        type: "select",
                         name: "architecture",
                         message: "¿Qué Arquitectura te gustaría utilizar?",
                         choices: [
