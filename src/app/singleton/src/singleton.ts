@@ -10,19 +10,9 @@ class Singleton {
 
     return Singleton.instance;
   }
-}
-class SingletonTorrrrr {
-  private static instance: SingletonTorrrrr;
 
-  private constructor() {}
-
-  public static getInstance(): SingletonTorrrrr {
-    if (!SingletonTorrrrr.instance) {
-      SingletonTorrrrr.instance = new SingletonTorrrrr();
+    getCats(param1: string): void {
     }
-
-    return SingletonTorrrrr.instance;
-  }
 }
 
-export default {Singleton, SingletonTorrrrr};
+export default Singleton;
