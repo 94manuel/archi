@@ -51,7 +51,7 @@ const UMLCanvas: React.FC = () => {
   const [lineStyle, setLineStyle] = useState('dotted');
   const [lines, setLines] = useState<LineProps[]>([]);
   const [isLineModeEnabled, setIsLineModeEnabled] = useState(false);
-  const [isZoomModeEnabled, setIsZoomModeEnabled] = useState(true);
+  const [isZoomModeEnabled, setIsZoomModeEnabled] = useState(false);
   const [isDrawingLine, setIsDrawingLine] = useState(false);
   const [lineStartPoint, setLineStartPoint] = useState<Point | null>(null);
   const [currentLine, setCurrentLine] = useState<LineProps | null>(null)
