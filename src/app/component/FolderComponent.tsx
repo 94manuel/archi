@@ -17,7 +17,7 @@ const FolderComponent: React.FC<{ folder: IFolder,  AddBox: (title:string, topTe
     console.log('Hola');
     console.log(file);
     if (file.classes && file.classes.length === 1) {
-      AddBox(`${file.classes[0].name}`, file.classes[0].properties.map((e)=> e.name), file.classes[0].methods.map((e)=> e.name));
+      AddBox(`${file.classes[0].name}`, file.classes[0].properties, file.classes[0].methods);
     } else if (file.classes && file.classes.length > 1) {
       file.classes.forEach((cls) => AddBox(`Clase en ${file.name}: ${cls.name}`, file.classes[0].properties.map((e)=> e.name), file.classes[0].methods.map((e)=> e.name)));
     }

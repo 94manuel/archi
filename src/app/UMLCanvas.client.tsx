@@ -6,6 +6,7 @@ import { Grid, AStarFinder } from 'pathfinding';
 import { useEffect, useRef, useState } from 'react';
 import NodeList from './component/NodeList';
 import { IFolder } from './component/Interfaces';
+import { MethodDetails, PropertyDetails } from '../../pages/api/model';
 
 const Line: React.FC<LineProps> = ({ startX, startY, endX, endY, controlX, controlY, style, color = "black" }) => {
   let d: string; // Este será el atributo 'd' del path de SVG
@@ -45,8 +46,8 @@ interface LineProps {
 
 // Ajustes a la interfaz UMLBoxProps para incluir topText y bottomText
 interface UMLBoxExtendedProps extends UMLBoxProps {
-  topText: string[];
-  bottomText: string[];
+  topText: PropertyDetails[];
+  bottomText: MethodDetails[];
 }
 const UMLCanvas = () => {
   const [boxes, setBoxes] = useState<UMLBoxProps[]>([]);

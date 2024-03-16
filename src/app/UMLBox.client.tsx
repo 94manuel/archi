@@ -1,6 +1,7 @@
 "use client"
 import React, { useRef, useEffect, useState } from 'react';
 import * as d3 from 'd3';
+import { MethodDetails, PropertyDetails } from '../../pages/api/model';
 export interface Point { x: number; y: number; }
 export interface Dimensions { width: number; height: number }
 
@@ -9,8 +10,8 @@ export interface UMLBoxProps {
     initialPosition: Point;
     initialWidth: number;
     initialHeight: number;
-    topText: string[]; // Texto para la parte superior
-    bottomText: string[];
+    topText: PropertyDetails[]; // Texto para la parte superior
+    bottomText: MethodDetails[];
     type: string;
     title: string;
     onPositionChange?: (id: string, newPosition: Point) => void;
@@ -44,8 +45,8 @@ const UMLBox: React.FC<UMLBoxProps> = ({
     const boxRef = useRef<SVGGElement>(null);
     const resizeHandleRef = useRef<SVGRectElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
-    const [topTextState, setTopText] = useState<string[]>(topText);
-    const [bottomTextState, setBottomText] = useState<string[]>(bottomText);
+    const [topTextState, setTopText] = useState<PropertyDetails[]>(topText);
+    const [bottomTextState, setBottomText] = useState<MethodDetails[]>(bottomText);
     const [editingIndex, setEditingIndex] = useState<number | null>(null); // Índice del elemento que se está editando
     const [tempText, setTempText] = useState<string>(''); // Texto temporal mientras se edita
 
@@ -86,9 +87,12 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                 // Captura la posición inicial del mouse al empezar el arrastre
                 const initialMouseX = event.x;
                 const initialMouseY = event.y;
+                //const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
+                const minHeight = computeMinHeight(topTextState, bottomTextState);
 
                 d3.select(this).attr('data-initial-mouse-x', initialMouseX);
                 d3.select(this).attr('data-initial-mouse-y', initialMouseY);
+               // updateDimensions();
             })
             .on('drag', (event) => {
                 const initialMouseX = parseFloat(d3.select(resizeHandleRef.current).attr('data-initial-mouse-x'));
@@ -99,25 +103,24 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                 const dy = event.y - initialMouseY;
 
                 // Ajusta las nuevas dimensiones basándose en el cambio de posición del mouse
+                //const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
+                //const minHeight = computeMinHeight(topTextState, bottomTextState);
                 const newWidth = Math.max(50, initialWidth + dx);
                 const newHeight = Math.max(50, initialHeight + dy);
 
                 setDimensions({ width: newWidth, height: newHeight });
                 onSizeChange && onSizeChange(id, newWidth, newHeight);
+
             });
         d3.select(resizeHandleRef.current).call(dragResize as any);
     }, [onSizeChange, id]);
-
-    useEffect(() => {
-        const updateDimensions = () => {
-            const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
-            const minHeight = computeMinHeight(topTextState, bottomTextState);
-            //setDimensions({ width: Math.max(initialWidth, maxWidth), height: Math.max(initialHeight, minHeight) });
-            //onSizeChange && onSizeChange(id, Math.max(initialWidth, maxWidth), Math.max(initialHeight, minHeight));
-        };
-
-        updateDimensions();
-    },  [topTextState, bottomTextState, title, initialWidth, initialHeight, onSizeChange, id]);
+    const updateDimensions = () => {
+       // const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
+        //const minHeight = computeMinHeight(topTextState, bottomTextState);
+       // setDimensions({ width: Math.max(initialWidth, maxWidth), height: Math.max(initialHeight, minHeight) });
+       // onSizeChange && onSizeChange(id, Math.max(initialWidth, maxWidth), Math.max(initialHeight, minHeight));
+    };
+    
     useEffect(() => {
         if (listRef.current) {
             const listItems = listRef.current.children;
@@ -134,11 +137,11 @@ const UMLBox: React.FC<UMLBoxProps> = ({
     }, [topTextState, bottomTextState]); // Dependencias: Asegúrate de incluir todo lo que pueda cambiar el contenido o tamaño de la lista.
 
     // Función para calcular el ancho máximo requerido por el texto más largo
-    const computeMaxWidth = (textArray: string[]) => {
+    const computeMaxWidth = (textArray: PropertyDetails[]) => {
         const charWidth = 8; // Ancho estimado por carácter, depende del tamaño de fuente y la fuente misma
         let maxWidth = 0;
         textArray.forEach(text => {
-            const textWidth = text.length * charWidth;
+            const textWidth = text.name.length * charWidth;
             if (textWidth > maxWidth) {
                 maxWidth = textWidth;
             }
@@ -146,7 +149,7 @@ const UMLBox: React.FC<UMLBoxProps> = ({
         return maxWidth + 30; // Agregar un poco de margen
     };
 
-    const computeMinHeight = (topTextArray: string[], bottomTextArray: string[]) => {
+    const computeMinHeight = (topTextArray: PropertyDetails[], bottomTextArray: MethodDetails[]) => {
         const itemHeight = 55; // Altura estimada por ítem, ajusta según el tamaño de fuente y el espaciado entre líneas
         const titleHeight = 45; // Espacio asignado para el título, ajusta según sea necesario
         const bottomHeight = 45; // Espacio asignado para el título, ajusta según sea necesario
@@ -157,23 +160,23 @@ const UMLBox: React.FC<UMLBoxProps> = ({
 
     const handleAddTopText = () => {
         const newTopTextState = [...topTextState, "Metodo"];
-        setTopText(newTopTextState);
+        //setTopText(newTopTextState);
     };
 
     const handleAddBottomText = () => {
         const newBottomTextState = [...bottomTextState, ""];
-        setBottomText(newBottomTextState);
+        //setBottomText(newBottomTextState);
     };
 
     const handleTopTextChange = (index: number, value: string) => {
         const newItems = [...topTextState];
-        newItems[index] = value;
+        newItems[index].name = value;
         setTopText(newItems);
     };
 
     const handleBottomTextChange = (index: number, value: string) => {
         const newItems = [...bottomTextState];
-        newItems[index] = value;
+        newItems[index].name = value;
         setBottomText(newItems);
     };
 
@@ -223,9 +226,9 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                         {topTextState.map((item, index) => (
                             <li key={index} style={{ marginBottom: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {editingIndex === index ? (
-                                <textarea value={item} onChange={(e) => handleTopTextChange(index, e.target.value)} style={{ width: '90%', resize: 'none', border: 'none', background: 'transparent', color: 'white', overflow: 'hidden' }} />
+                                <textarea value={item.name} onChange={(e) => handleTopTextChange(index, e.target.value)} style={{ width: '90%', resize: 'none', border: 'none', background: 'transparent', color: 'white', overflow: 'hidden' }} />
                                 ) : (
-                                    <span onDoubleClick={() => handleEdit(index, item)}>{item}</span>
+                                    <span onDoubleClick={() => handleEdit(index, item.name)}>{item.name}</span>
                                 )}
                                 {editingIndex === index && (
                                     <>
@@ -253,9 +256,9 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                         {bottomTextState.map((item, index) => (
                             <li key={index} style={{ marginBottom: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                 {editingIndex === index ? (
-                                <textarea value={item} onChange={(e) => handleBottomTextChange(index, e.target.value)} style={{ width: '90%', resize: 'none', border: 'none', background: 'transparent', color: 'white', overflow: 'hidden' }} />
+                                <textarea value={item.name} onChange={(e) => handleBottomTextChange(index, e.target.value)} style={{ width: '90%', resize: 'none', border: 'none', background: 'transparent', color: 'white', overflow: 'hidden' }} />
                                 ) : (
-                                    <span onDoubleClick={() => handleEdit(index, item)}>{item}</span>
+                                    <span onDoubleClick={() => handleEdit(index, item.name)}>{item.name}</span>
                                 )}
                                 {editingIndex === index && (
                                     <>
