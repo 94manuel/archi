@@ -46,6 +46,9 @@ const UMLBox: React.FC<UMLBoxProps> = ({
     const listRef = useRef<HTMLUListElement>(null);
     const [topTextState, setTopText] = useState<string[]>(topText);
     const [bottomTextState, setBottomText] = useState<string[]>(bottomText);
+    const [editingIndex, setEditingIndex] = useState<number | null>(null); // Índice del elemento que se está editando
+    const [tempText, setTempText] = useState<string>(''); // Texto temporal mientras se edita
+
     const boxColors:BoxColors  = {
         clase: 'blue',
         interfaz: 'green',
@@ -109,8 +112,8 @@ const UMLBox: React.FC<UMLBoxProps> = ({
         const updateDimensions = () => {
             const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
             const minHeight = computeMinHeight(topTextState, bottomTextState);
-            setDimensions({ width: Math.max(initialWidth, maxWidth), height: Math.max(initialHeight, minHeight) });
-            onSizeChange && onSizeChange(id, Math.max(initialWidth, maxWidth), Math.max(initialHeight, minHeight));
+            //setDimensions({ width: Math.max(initialWidth, maxWidth), height: Math.max(initialHeight, minHeight) });
+            //onSizeChange && onSizeChange(id, Math.max(initialWidth, maxWidth), Math.max(initialHeight, minHeight));
         };
 
         updateDimensions();
@@ -174,6 +177,24 @@ const UMLBox: React.FC<UMLBoxProps> = ({
         setBottomText(newItems);
     };
 
+    const handleClose = () => {
+        //setIsVisible(false);
+    };
+    const handleEdit = (index: number, currentText: string) => {
+        setEditingIndex(index); // Establece el índice actual como el que se está editando
+        setTempText(currentText); // Inicializa el texto temporal con el valor actual
+    };
+
+    const handleConfirm = (index: number) => {
+        handleTopTextChange(index, tempText); // Actualiza el texto con el valor temporal
+        console.log(topTextState[index])
+        setEditingIndex(null); // Sale del modo de edición
+    };
+
+    const handleCancel = () => {
+        setEditingIndex(null); // Simplemente sale del modo de edición sin guardar cambios
+    };
+
     return (
         <g ref={boxRef} transform={`translate(${initialPosition.x}, ${initialPosition.y})`} cursor="move"
             onDoubleClick={(e) => {
@@ -201,7 +222,21 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                     <ul ref={listRef} style={{ listStyle: 'none', padding: '10px', margin: '0' }} >
                         {topTextState.map((item, index) => (
                             <li key={index} style={{ marginBottom: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {editingIndex === index ? (
                                 <textarea value={item} onChange={(e) => handleTopTextChange(index, e.target.value)} style={{ width: '90%', resize: 'none', border: 'none', background: 'transparent', color: 'white', overflow: 'hidden' }} />
+                                ) : (
+                                    <span onDoubleClick={() => handleEdit(index, item)}>{item}</span>
+                                )}
+                                {editingIndex === index && (
+                                    <>
+                                        <button onClick={() => handleConfirm(index)} style={{ position: 'absolute', right: 0, top: 0 }}>
+                                            Confirmar
+                                        </button>
+                                        <button onClick={handleCancel} style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                                            Cancelar
+                                        </button>
+                                    </>
+                                )}
                             </li>
                         ))}
                         <li onClick={handleAddTopText} style={{ cursor: 'pointer', color: 'blue' }}>
@@ -217,7 +252,21 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                     <ul style={{ listStyle: 'none', padding: '10px', margin: '0' }}>
                         {bottomTextState.map((item, index) => (
                             <li key={index} style={{ marginBottom: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {editingIndex === index ? (
                                 <textarea value={item} onChange={(e) => handleBottomTextChange(index, e.target.value)} style={{ width: '90%', resize: 'none', border: 'none', background: 'transparent', color: 'white', overflow: 'hidden' }} />
+                                ) : (
+                                    <span onDoubleClick={() => handleEdit(index, item)}>{item}</span>
+                                )}
+                                {editingIndex === index && (
+                                    <>
+                                        <button onClick={() => handleConfirm(index)} style={{ position: 'absolute', right: 0, top: 0 }}>
+                                            Confirmar
+                                        </button>
+                                        <button onClick={handleCancel} style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                                            Cancelar
+                                        </button>
+                                    </>
+                                )}
                             </li>
                         ))}
                         <li onClick={handleAddBottomText} style={{ cursor: 'pointer', color: 'blue' }}>
@@ -237,6 +286,17 @@ const UMLBox: React.FC<UMLBoxProps> = ({
                 fill="gray" // Color gris para el manejador de redimensionamiento
                 cursor="nwse-resize"
             />
+            {/* Botón de eliminar/cerrar */}
+            <text
+                x={dimensions.width - 15} // Posición X cerca del borde derecho
+                y="15" // Posición Y cerca del borde superior
+                fill="red" // Color rojo para la "X"
+                cursor="pointer" // Cambia el cursor a pointer
+                onClick={handleClose}
+                onMouseEnter={() => console.log('Cerrar UML')} // Muestra un mensaje en consola al pasar el mouse (ajusta según necesidad)
+            >
+                &#x2715; {/* Símbolo de "X" */}
+            </text>
         </g>
     );
     
