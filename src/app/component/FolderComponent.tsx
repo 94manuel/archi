@@ -8,17 +8,18 @@ const FileIcon: React.FC<{ type: string }> = ({ type }) => {
   return <img src={iconPath} alt={type} style={{ width: '20px', marginRight: '5px' }} />;
 };
 
-const FolderComponent: React.FC<{ folder: IFolder,  AddBox: (title:string) => void; }> = ({ folder,  AddBox }) => {
+const FolderComponent: React.FC<{ folder: IFolder,  AddBox: (title:string, topText: any[], bottomText: any[]) => void }> = ({ folder, AddBox}) => {
   const [isExpanded, setIsExpanded] = useState(false); // Estado para controlar la expansión de los subdirectorios
 
   const toggleExpansion = () => setIsExpanded(!isExpanded); // Función para cambiar el estado de expansión
   const handleFileClick = (file: IFile) => {
     
     console.log('Hola');
+    console.log(file);
     if (file.classes && file.classes.length === 1) {
-      AddBox(`${file.classes[0].name}`);
+      AddBox(`${file.classes[0].name}`, file.classes[0].properties.map((e)=> e.name), file.classes[0].methods.map((e)=> e.name));
     } else if (file.classes && file.classes.length > 1) {
-      file.classes.forEach((cls) => AddBox(`Clase en ${file.name}: ${cls.name}`));
+      file.classes.forEach((cls) => AddBox(`Clase en ${file.name}: ${cls.name}`, file.classes[0].properties.map((e)=> e.name), file.classes[0].methods.map((e)=> e.name)));
     }
   }; // Función para cambiar el estado de expansión
 

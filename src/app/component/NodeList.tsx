@@ -7,7 +7,7 @@ import './NodeList.css';
 interface NodeListProps {
   folders: IFolder[];
   isLoading: boolean;
-  onAddBox: (title:string) => void;
+  onAddBox: (title:string, topText: any[], bottomText: any[]) => void;
 }
 
 const NodeList: React.FC<NodeListProps> = ({ folders, isLoading, onAddBox }) => {

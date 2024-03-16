@@ -1,4 +1,7 @@
 // Interfaces.ts
+
+import { MethodDetails, PropertyDetails } from "../../../pages/api/model";
+
 // Asumiendo la definición de las interfaces IFolder e IFile
 export interface IFolder {
   name: string;
@@ -10,6 +13,8 @@ export interface IFolder {
 
 export interface IClass {
   name: string;
+  methods: MethodDetails[];
+  properties: PropertyDetails[];
   // Agrega más propiedades según sea necesario
 }
 

@@ -140,7 +140,7 @@ const UMLCanvas = () => {
   };
 
 
-  const addBox = (title:string) => {
+  const addBox = (title:string, topText: any[], bottomText: any[]) => {
     // Calcular una nueva posición para evitar solapamientos
     let newX = 50;
     let newY = 50;
@@ -155,10 +155,10 @@ const UMLCanvas = () => {
       initialPosition: { x: newX, y: newY },
       initialWidth: 100,
       initialHeight: 50,
-      topText: [`Top Box ${boxes.length + 1}`],
+      topText,
       type: 'clase',
       title,
-      bottomText: [`Bottom Box ${boxes.length + 1}`],
+      bottomText,
       onDoubleClick: () => handleDoubleClick(`box-${boxes.length + 1}`),
       onUpdate: (data: { id: string; position: Point; dimensions: Dimensions; text: string[] }) => {
         updateBox(data); // Llama a una función que maneje las actualizaciones de los cuadros UML

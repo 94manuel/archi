@@ -2,7 +2,7 @@
 import React from 'react';
 
 const ToolPalette: React.FC<{
-  onAddBox: (title:string) => void,
+  onAddBox: (title:string, topTextState:any, bottomText: any[]) => void,
   onChangeLineStyle: (style: string) => void,
   onToggleLineMode: () => void,
   onToggleZoomMode: () => void,
@@ -12,7 +12,7 @@ const ToolPalette: React.FC<{
   return (
     <div className="tool-palette" style={{ padding: '10px', border: '1px solid #ccc', marginLeft: '20px' }}>
       <h3>Herramientas UML</h3>
-      <button onClick={() => onAddBox("ejemplo")}>Agregar Cuadro UML</button>
+      <button onClick={() => onAddBox("ejemplo",[{}],[{}])}>Agregar Cuadro UML</button>
       <div>
         <label>Estilo de Línea:</label>
         <select onChange={(e) => onChangeLineStyle(e.target.value)}>
