@@ -1,0 +1,35 @@
+/* NodeList.css */
+.nodeList {
+  width: 20%;
+  list-style-type: none; /* Elimina los marcadores de lista predeterminados */
+  padding-left: 0; /* Elimina el relleno izquierdo predeterminado */
+}
+
+.nodeList li {
+  margin-bottom: 5px; /* Espacio entre elementos de la lista */
+}
+
+.nodeList li div {
+  cursor: pointer; /* Cambia el cursor cuando se pasa sobre los nombres de las carpetas */
+  display: flex; /* Alinea el icono con el texto */
+  align-items: center; /* Centra el contenido en la línea base */
+}
+
+.nodeList li ul {
+  padding-left: 20px; /* Aumenta el relleno para subelementos para indicar anidamiento */
+  list-style-type: none; /* Elimina los marcadores de lista predeterminados */
+  margin-top: 5px; /* Espacio entre el elemento padre y la lista anidada */
+  color: white;
+  padding: 10px;
+  margin: 10px;
+}
+
+.file-icon {
+  margin-right: 5px; /* Espacio entre el icono y el nombre del archivo */
+  width: 20px; /* Tamaño del icono */
+}
+
+.folder-icon {
+  margin-right: 5px; /* Espacio entre el icono y el nombre de la carpeta */
+  width: 20px; /* Tamaño del icono */
+}
