@@ -109,12 +109,11 @@ const UMLBox: React.FC<UMLBoxProps> = ({
         // Captura la posición inicial del mouse al empezar el arrastre
         const initialMouseX = event.x;
         const initialMouseY = event.y;
-        //const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
+        
         const minHeight = computeMinHeight(topTextState, bottomTextState);
 
         d3.select(this).attr("data-initial-mouse-x", initialMouseX);
         d3.select(this).attr("data-initial-mouse-y", initialMouseY);
-        // updateDimensions();
       })
       .on("drag", (event) => {
         const initialMouseX = parseFloat(
@@ -128,9 +127,6 @@ const UMLBox: React.FC<UMLBoxProps> = ({
         const dx = event.x - initialMouseX;
         const dy = event.y - initialMouseY;
 
-        // Ajusta las nuevas dimensiones basándose en el cambio de posición del mouse
-        //const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
-        //const minHeight = computeMinHeight(topTextState, bottomTextState);
         const newWidth = Math.max(50, initialWidth + dx);
         const newHeight = Math.max(50, initialHeight + dy);
 
@@ -139,48 +135,56 @@ const UMLBox: React.FC<UMLBoxProps> = ({
       });
     d3.select(resizeHandleRef.current).call(dragResize as any);
   }, [onSizeChange, id]);
-  const updateDimensions = () => {
-    // const maxWidth = computeMaxWidth([...topTextState, ...bottomTextState, title]);
-    //const minHeight = computeMinHeight(topTextState, bottomTextState);
-    // setDimensions({ width: Math.max(initialWidth, maxWidth), height: Math.max(initialHeight, minHeight) });
-    // onSizeChange && onSizeChange(id, Math.max(initialWidth, maxWidth), Math.max(initialHeight, minHeight));
-  };
 
   useEffect(() => {
-    if (listRef.current) {
-      const listItems = listRef.current.children;
-      let totalHeight = 0;
-      for (let i = 0; i < listItems.length; i++) {
-        const item = listItems[i] as HTMLElement;
-        totalHeight += item.getBoundingClientRect().height;
+    if (boxRef.current) {
+      let requiredHeight = 0;
+      let requiredWidth = 0;
+  
+      // Altura para el título, asumiendo una altura fija
+      const titleHeight = 30; // Ajusta este valor según tu diseño
+      requiredHeight += titleHeight;
+  
+      // Calcula el ancho necesario para el título
+      const textElement = d3.select(boxRef.current).select('text').node();
+      if (textElement instanceof SVGTextElement) {
+        const titleWidth = textElement.getComputedTextLength();
+        requiredWidth = Math.max(requiredWidth, titleWidth + 20); // Añade margen alrededor del título
       }
 
-      const newHeight = totalHeight + 20;
-      setDimensions((dimensions) => ({
-        ...dimensions,
-        height: Math.max(dimensions.height, newHeight),
-      }));
-      onSizeChange &&
-        onSizeChange(
-          id,
-          dimensions.width,
-          Math.max(dimensions.height, newHeight)
-        );
+      // Añade espacio para los botones "Agregar"
+        const addButtonHeight = 30;  // Asumiendo una altura fija para los botones "Agregar"
+        requiredHeight += addButtonHeight * 2;  // Dos botones, uno para propiedades y otro para métodos
+
+    
+      // Estima la altura y el ancho necesarios para topTextState y bottomTextState
+      const lineHeight = 20; // Altura por línea, ajusta según el tamaño de fuente y espaciado
+      const estimatedFontWidth = 12; // Ancho estimado por carácter, ajusta según tu diseño
+      const totalTextLines = topTextState.length + bottomTextState.length;
+      const textHeight = totalTextLines * lineHeight;
+      requiredHeight += textHeight;
+  
+      // Calcula el ancho requerido por los elementos de texto más largos
+      [...topTextState, ...bottomTextState].forEach((text) => {
+        const textWidth = text.name.length * estimatedFontWidth;
+        requiredWidth = Math.max(requiredWidth, textWidth + 20); // Añade margen alrededor del texto
+      });
+  
+      // Altura para el botón, asumiendo una altura fija, más un margen
+      const buttonHeight = 40; // Altura del botón más un margen adecuado
+      requiredHeight += buttonHeight;
+  
+      // Asegúrate de que las dimensiones del UMLBox sean al menos iguales a las requeridas
+      if (dimensions.width < requiredWidth || dimensions.height < requiredHeight) {
+        setDimensions({
+          width: Math.max(dimensions.width, requiredWidth),
+          height: Math.max(dimensions.height, requiredHeight),
+        });
+        if (onSizeChange) onSizeChange(id, Math.max(dimensions.width, requiredWidth), Math.max(dimensions.height, requiredHeight));
+      }
     }
-  }, [topTextState, bottomTextState]); // Dependencias: Asegúrate de incluir todo lo que pueda cambiar el contenido o tamaño de la lista.
-
-  // Función para calcular el ancho máximo requerido por el texto más largo
-  const computeMaxWidth = (textArray: PropertyDetails[]) => {
-    const charWidth = 8; // Ancho estimado por carácter, depende del tamaño de fuente y la fuente misma
-    let maxWidth = 0;
-    textArray.forEach((text) => {
-      const textWidth = text.name.length * charWidth;
-      if (textWidth > maxWidth) {
-        maxWidth = textWidth;
-      }
-    });
-    return maxWidth + 30; // Agregar un poco de margen
-  };
+  }, [topTextState, bottomTextState, title, dimensions, onSizeChange, id]);
+  
 
   const computeMinHeight = (
     topTextArray: PropertyDetails[],
@@ -326,11 +330,11 @@ const UMLBox: React.FC<UMLBoxProps> = ({
       />
       {/* Título (nombre de la clase) */}
       <text
-        x="20%"
+        x={dimensions.width / 2}
         y="20"
         fill="black"
         textAnchor="middle"
-        dominantBaseline="middle"
+        dominantBaseline="central"
         fontSize="14"
         fontWeight="bold"
         style={{
