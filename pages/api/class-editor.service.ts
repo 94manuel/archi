@@ -91,6 +91,7 @@ export class ClassEditorService {
       name: change.name,
       type: change.propertyType,
       initializer: change.initializer,
+      
     });
   }
 

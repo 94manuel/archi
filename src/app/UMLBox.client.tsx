@@ -159,8 +159,19 @@ const UMLBox: React.FC<UMLBoxProps> = ({
     };
 
     const handleAddTopText = () => {
-        const newTopTextState = [...topTextState, "Metodo"];
-        //setTopText(newTopTextState);
+        const newProperty: PropertyDetails = {
+            name: "newProperty", // Un nombre predeterminado o puedes dejarlo para que el usuario lo complete
+            //returnType: "void", // Ajusta según los requisitos de tu aplicación
+            //parameters: [], // Inicializa sin parámetros, ajusta según sea necesario
+            //bodyText: "", // Cuerpo del método vacío o con contenido predeterminado
+            // Asume valores predeterminados o relevantes para las siguientes propiedades basadas en tu error
+            typeIds: [], // Ajusta según tu definición de PropertyDetails
+            optional: true, // Ajusta según tu definición de PropertyDetails
+            modifierFlags: 0 // Ajusta según tu definición de PropertyDetails
+        };
+        const newTopTextState = [...topTextState, newProperty];
+        setTopText(newTopTextState);
+        setEditingIndex(topTextState.length);
     };
 
     const handleAddBottomText = () => {
@@ -191,7 +202,63 @@ const UMLBox: React.FC<UMLBoxProps> = ({
     const handleConfirm = (index: number) => {
         handleTopTextChange(index, tempText); // Actualiza el texto con el valor temporal
         console.log(topTextState[index])
+        const existingMethodIndex = topTextState.findIndex(method => method.name === tempText);
+        const methodExists = existingMethodIndex !== -1; // Si findIndex devuelve -1, el método no existe
+
         setEditingIndex(null); // Sale del modo de edición
+
+        // Prepara los datos para la solicitud
+        const updatedText = [...topTextState];
+        updatedText[index] = { ...updatedText[index], name: tempText }; // Asume que solo se está editando el topText
+
+        let change;
+        if (methodExists) {
+            // Si el método existe, prepara un cambio de tipo 'editMethod'
+            const existingMethod = topTextState[existingMethodIndex];
+            change = {
+                type: "editProperty",
+                oldName: existingMethod.name, // Nombre antiguo del método
+                newName: tempText, // Nuevo nombre del método
+                // Incluye otros campos necesarios para editar el método
+            };
+        }
+        // Suponiendo que cada edición se trata de agregar un nuevo método
+        // y que el `index` y `tempText` se refieren a este nuevo método
+        const newMethod = {
+            type: "addProperty",
+            name: tempText, // Asume que tempText contiene el nombre del nuevo método
+            returnType: "void", // Puedes modificar esto según sea necesario
+            parameters: [
+                {
+                    name: "param1", // Asume un parámetro estático, ajusta según sea necesario
+                    type: "string"
+                }
+            ],
+            bodyText: "console.log(param1);" // Asume un cuerpo de método estático, ajusta según sea necesario
+        };
+    
+        const dataToUpdate = {
+            filePath: "C:/Users/Manuel Fernando/Documents/archi/src/app/singleton/src/singleton.ts", // La ruta del archivo que estás editando
+            className: "Singleton", // El nombre de la clase que estás editando
+            changes: [newMethod] // El array de cambios incluye el nuevo método
+        };
+
+        fetch('/api/editclass', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToUpdate),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            // Aquí puedes manejar la respuesta del servidor, como actualizar el estado de la UI
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            // Aquí puedes manejar errores de la solicitud
+        });
     };
 
     const handleCancel = () => {
