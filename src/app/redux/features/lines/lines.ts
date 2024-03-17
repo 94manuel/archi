@@ -3,10 +3,12 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface Lines {
   value: any[];
+  lineStyle: string
 }
 
 const initialState: Lines = {
   value: [],
+  lineStyle:"dotted"
 };
 
 export const linesSlice = createSlice({
@@ -20,10 +22,13 @@ export const linesSlice = createSlice({
       // immutable state based off those changes
       state.value = action.payload;
     },
+    changeStyle: (state, action: PayloadAction<string>) => {
+      state.lineStyle = action.payload;
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addLine } = linesSlice.actions;
+export const { addLine, changeStyle} = linesSlice.actions;
 
 export default linesSlice.reducer;

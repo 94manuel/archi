@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import umlSliceReducer from "./features/UMLBoxs/UMLBoxes";
 import linesSliceReducer from "./features/lines/lines";
+import canvasSlice from "./features/canvas/canvas";
 
 export const store = configureStore({
   reducer: {
     uml: umlSliceReducer,
     line: linesSliceReducer,
+    canvas: canvasSlice,
   },
 });
 

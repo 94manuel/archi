@@ -10,7 +10,8 @@ import { MethodDetails, PropertyDetails } from "../../pages/api/model";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "./redux/store";
 import { addBoxs } from "./redux/features/UMLBoxs/UMLBoxes";
-import { addLine } from "./redux/features/lines/lines";
+import { addLine, changeStyle } from "./redux/features/lines/lines";
+import { setSvgDimensions } from "./redux/features/canvas/canvas";
 
 const Line: React.FC<LineProps> = ({
   startX,
@@ -66,19 +67,39 @@ interface UMLBoxExtendedProps extends UMLBoxProps {
 const UMLCanvas = () => {
   const boxes = useSelector((state: RootState) => state.uml.value);
   const lines = useSelector((state: RootState) => state.line.value);
+  const lineStyle = useSelector((state: RootState) => state.line.value);
+  const svgDimensions = useSelector((state: RootState) => state.canvas.svgDimensions);
   const dispatch = useDispatch();
 
-  const [lineStyle, setLineStyle] = useState("dotted");
   const [isLineModeEnabled, setIsLineModeEnabled] = useState(false);
-  const [isZoomModeEnabled, setIsZoomModeEnabled] = useState(true);
+  const [isZoomModeEnabled, setIsZoomModeEnabled] = useState(false);
   const [isDrawingLine, setIsDrawingLine] = useState(false);
   const [lineStartPoint, setLineStartPoint] = useState<Point | null>(null);
   const [currentLine, setCurrentLine] = useState<LineProps | null>(null);
   const [folders, setFolders] = useState<IFolder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const screenHeight = window.innerHeight;
 
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<SVGGElement>(null);
+
+  useEffect(() => {
+    // Función para actualizar las dimensiones del SVG cuando la ventana cambia de tamaño
+    const handleResize = () => {
+      dispatch(setSvgDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }))
+    };
+
+    // Agrega el evento listener
+    window.addEventListener('resize', handleResize);
+
+    // Limpia el evento listener al desmontar el componente
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     // Inicializa el área SVG aquí si es necesario
@@ -147,7 +168,7 @@ const UMLCanvas = () => {
           startY: box.initialPosition.y + box.initialHeight / 2,
           endX: box.initialPosition.x + box.initialWidth / 2, // Temporalmente igual al punto de inicio
           endY: box.initialPosition.y + box.initialHeight / 2, // Temporalmente igual al punto de inicio
-          style: "solid", // O el estilo que desees
+          style: lineStyle, // O el estilo que desees
         };
         setCurrentLine(newLine);
       }
@@ -160,6 +181,7 @@ const UMLCanvas = () => {
           endBoxId: boxId,
           endX: box.initialPosition.x + box.initialWidth / 2,
           endY: box.initialPosition.y + box.initialHeight / 2,
+          style: lineStyle,
         };
         dispatch(addLine([...lines, finishedLine]));
         setCurrentLine(null); // Resetea la línea actual;
@@ -272,7 +294,7 @@ const UMLCanvas = () => {
         type: "number",
       },
     ]);
-    setLineStyle(style);
+    dispatch(changeStyle(style));
   };
 
   const handleTextChange = (id: string, newText: string[]) => {
@@ -517,12 +539,14 @@ const UMLCanvas = () => {
   }, []);
 
   return (
-    <div style={{ display: "flex" }}>
-      <NodeList folders={folders} isLoading={isLoading} onAddBox={addBox} />
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '20%', height: '100%', overflowY: 'auto', overflowX: 'hidden', borderRight: '1px solid #ccc' }}>
+        <NodeList folders={folders} isLoading={isLoading} onAddBox={addBox} />
+      </div>
       <svg
         ref={svgRef}
-        width="900"
-        height="650"
+        width={svgDimensions.width}
+        height={svgDimensions.height}
         style={{ border: "1px solid black" }}
       >
         <g ref={zoomRef}>
@@ -561,15 +585,17 @@ const UMLCanvas = () => {
           {currentLine && <Line {...currentLine} />}
         </g>
       </svg>
-
-      <ToolPalette
-        onAddBox={addBox}
-        onChangeLineStyle={changeLineStyle}
-        onToggleLineMode={toggleLineMode}
-        isLineModeActive={!isLineModeEnabled}
-        onToggleZoomMode={toggZoomMode}
-        isZoomModeActive={isZoomModeEnabled}
-      />
+      
+      <div style={{ position: 'absolute', top: 0, right: 0, width: '20%', height: '100%', overflowY: 'auto', overflowX: 'hidden', borderLeft: '1px solid #ccc' }}>
+        <ToolPalette
+          onAddBox={addBox}
+          onChangeLineStyle={changeLineStyle}
+          onToggleLineMode={toggleLineMode}
+          isLineModeActive={!isLineModeEnabled}
+          onToggleZoomMode={toggZoomMode}
+          isZoomModeActive={isZoomModeEnabled}
+        />
+      </div>
     </div>
   );
 };
