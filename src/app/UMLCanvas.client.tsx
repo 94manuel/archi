@@ -34,7 +34,6 @@ const UMLCanvas = () => {
   const [currentLine, setCurrentLine] = useState<LineProps | null>(null);
   const [folders, setFolders] = useState<IFolder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const screenHeight = window.innerHeight;
 
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<SVGGElement>(null);

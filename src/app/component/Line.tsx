@@ -32,7 +32,7 @@ const Line: React.FC<LineProps> = ({
   }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [showDeleteButton, setShowDeleteButton] = useState(false);
-    const [controlPoint, setControlPoint] = useState({ controlX: null, controlY: null });
+    const [controlPoint, setControlPoint] = useState([]);
 
     const ref = useRef(null);
   
@@ -41,13 +41,11 @@ const Line: React.FC<LineProps> = ({
       svg.selectAll('*').remove(); // Limpia el contenedor antes de dibujar
   
       let d: string;
-      if (controlPoint.controlX !== null && controlPoint.controlY !== null) {
-        // Dibuja una curva cuadrática si existe un punto de control
-        d = `M ${startX} ${startY} Q ${controlPoint.controlX} ${controlPoint.controlY} ${endX} ${endY}`;
-      } else {
-        // Dibuja una línea recta en caso contrario
-        d = `M ${startX} ${startY} L ${endX} ${endY}`;
-      }
+      d = `M ${startX} ${startY}`;
+      controlPoint.forEach(point => {
+        d += ` L ${point.x} ${point.y}`;
+      });
+      d += ` L ${endX} ${endY}`;
   
       const path = svg.append('path')
         .attr('d', d)
@@ -64,9 +62,15 @@ const Line: React.FC<LineProps> = ({
         path.on('dblclick', (event) => {
           const [x, y] = d3.pointer(event);
           console.log("Dobleclick")
-          setControlPoint({ controlX: x, controlY: y });
+          setControlPoint([...controlPoint, { x, y }]);
         });
-        
+        controlPoint.forEach(point => {
+          svg.append('circle')
+            .attr('cx', point.x)
+            .attr('cy', point.y)
+            .attr('r', 5)
+            .attr('fill', 'red');
+        });
         if (showDeleteButton) {
           svg.append('text')
             .attr('x', (startX + endX) / 2)
