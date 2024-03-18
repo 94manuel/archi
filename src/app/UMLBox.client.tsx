@@ -110,8 +110,6 @@ const UMLBox: React.FC<UMLBoxProps> = ({
         const initialMouseX = event.x;
         const initialMouseY = event.y;
         
-        const minHeight = computeMinHeight(topTextState, bottomTextState);
-
         d3.select(this).attr("data-initial-mouse-x", initialMouseX);
         d3.select(this).attr("data-initial-mouse-y", initialMouseY);
       })
@@ -184,23 +182,6 @@ const UMLBox: React.FC<UMLBoxProps> = ({
       }
     }
   }, [topTextState, bottomTextState, title, dimensions, onSizeChange, id]);
-  
-
-  const computeMinHeight = (
-    topTextArray: PropertyDetails[],
-    bottomTextArray: MethodDetails[]
-  ) => {
-    const itemHeight = 55; // Altura estimada por ítem, ajusta según el tamaño de fuente y el espaciado entre líneas
-    const titleHeight = 45; // Espacio asignado para el título, ajusta según sea necesario
-    const bottomHeight = 45; // Espacio asignado para el título, ajusta según sea necesario
-    // Calcula la altura total basada en el número de elementos en cada lista
-    const totalHeight =
-      titleHeight +
-      (topTextArray.length + bottomTextArray.length) * itemHeight +
-      20 +
-      bottomHeight; // 20px para padding adicional
-    return totalHeight;
-  };
 
   const handleAddTopText = () => {
     const newProperty: PropertyDetails = {
