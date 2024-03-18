@@ -10,54 +10,10 @@ import { MethodDetails, PropertyDetails } from "../../pages/api/model";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "./redux/store";
 import { addBoxs } from "./redux/features/UMLBoxs/UMLBoxes";
-import { addLine, changeStyle } from "./redux/features/lines/lines";
+import { LineStyle, addLine, changeStyle } from "./redux/features/lines/lines";
 import { setSvgDimensions } from "./redux/features/canvas/canvas";
+import Line, { LineProps } from "./component/Line";
 
-const Line: React.FC<LineProps> = ({
-  startX,
-  startY,
-  endX,
-  endY,
-  controlX,
-  controlY,
-  style,
-  color = "black",
-}) => {
-  let d: string; // Este será el atributo 'd' del path de SVG
-  if (controlX !== undefined && controlY !== undefined) {
-    // Si hay un punto de control, dibuja una curva cuadrática
-    d = `M ${startX} ${startY} Q ${controlX} ${controlY} ${endX} ${endY}`;
-  } else {
-    // Si no hay punto de control, dibuja una línea recta
-    d = `M ${startX} ${startY} L ${endX} ${endY}`;
-  }
-
-  return (
-    <path
-      d={d}
-      stroke={color}
-      strokeWidth="2"
-      fill="none"
-      strokeDasharray={
-        style === "dotted" ? "1 3" : style === "dashed" ? "6 6" : ""
-      }
-    />
-  );
-};
-
-interface LineProps {
-  startBoxId: string;
-  endBoxId: string;
-  path: Point[];
-  startX?: number;
-  startY?: number;
-  endX?: number;
-  endY?: number;
-  style: string;
-  controlX?: number;
-  controlY?: number;
-  color?: string;
-}
 
 // Ajustes a la interfaz UMLBoxProps para incluir topText y bottomText
 interface UMLBoxExtendedProps extends UMLBoxProps {
@@ -575,12 +531,13 @@ const UMLCanvas = () => {
               endY={line.endY}
               controlX={line.controlX}
               controlY={line.controlY}
-              style={line.style}
               color={line.color}
               startBoxId={""}
               endBoxId={""}
               path={[]}
-            />
+              style={LineStyle.Dotted}
+              onDelete={() => console.log("Eliminar línea")}
+              />
           ))}
           {currentLine && <Line {...currentLine} />}
         </g>

@@ -16,9 +16,9 @@ const ToolPalette: React.FC<{
       <div>
         <label>Estilo de Línea:</label>
         <select onChange={(e) => onChangeLineStyle(e.target.value)}>
-          <option value="solid">Sólida</option>
-          <option value="dotted">Punteada</option>
-          <option value="dashed">Rayada</option>
+          <option value="Solid">Sólida</option>
+          <option value="Dotted">Punteada</option>
+          <option value="Dashed">Rayada</option>
         </select>
       </div>
       <button onClick={onToggleLineMode}>{isLineModeActive ? "Desactivar" : "Activar"} Modo de Dibujo de Líneas</button>
