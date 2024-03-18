@@ -31,11 +31,17 @@ export const linesSlice = createSlice({
     },
     changeStyle: (state, action: PayloadAction<LineStyle>) => {
       state.lineStyle = action.payload;
+    },
+    deleteLine: (state, action: PayloadAction<string>) => {
+      console.log(state.value)
+      const result = state.value.findIndex(line => line.startBoxId == action.payload);
+      state.value.splice(result, 1);
+      console.log(result)
     }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addLine, changeStyle} = linesSlice.actions;
+export const { addLine, changeStyle, deleteLine } = linesSlice.actions;
 
 export default linesSlice.reducer;

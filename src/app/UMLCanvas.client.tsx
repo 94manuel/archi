@@ -10,7 +10,7 @@ import { MethodDetails, PropertyDetails } from "../../pages/api/model";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "./redux/store";
 import { addBoxs } from "./redux/features/UMLBoxs/UMLBoxes";
-import { LineStyle, addLine, changeStyle } from "./redux/features/lines/lines";
+import { LineStyle, addLine, changeStyle, deleteLine } from "./redux/features/lines/lines";
 import { setSvgDimensions } from "./redux/features/canvas/canvas";
 import Line, { LineProps } from "./component/Line";
 
@@ -493,6 +493,10 @@ const UMLCanvas = () => {
       .catch((error) => console.error("Error al traer los folders:", error));
   }, []);
 
+
+  const generateUniqueId = () => {
+    return `id-${Math.random().toString(36).substr(2, 9)}`;
+  };
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: 0, left: 0, width: '20%', height: '100%', overflowY: 'auto', overflowX: 'hidden', borderRight: '1px solid #ccc' }}>
@@ -524,6 +528,7 @@ const UMLCanvas = () => {
           {lines.map((line, index) => (
             <Line
               key={index}
+              id={generateUniqueId()}
               startX={line.startX}
               startY={line.startY}
               endX={line.endX}
@@ -535,7 +540,6 @@ const UMLCanvas = () => {
               endBoxId={""}
               path={[]}
               style={LineStyle.Dotted}
-              onDelete={() => console.log("Eliminar línea")}
               />
           ))}
           {currentLine && <Line {...currentLine} />}

@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Point } from "../UMLBox.client";
-import { LineStyle } from "../redux/features/lines/lines";
+import { LineStyle, deleteLine } from "../redux/features/lines/lines";
 import * as d3 from "d3";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
 export interface LineProps {
+    id: string;
     startBoxId: string;
     endBoxId: string;
     path: Point[];
@@ -17,10 +20,10 @@ export interface LineProps {
     color?: string;
     initialColor?: string;
     selectedColor?: string;
-    onDelete: () => void; 
   }
 
 const Line: React.FC<LineProps> = ({
+    id,
     startX,
     startY,
     endX,
@@ -28,11 +31,12 @@ const Line: React.FC<LineProps> = ({
     controlX,
     controlY,
     style,
-    initialColor = 'black', selectedColor = 'red', onDelete 
+    initialColor = 'black', selectedColor = 'red' 
   }) => {
     const [isSelected, setIsSelected] = useState(false);
     const [showDeleteButton, setShowDeleteButton] = useState(false);
     const [controlPoint, setControlPoint] = useState([]);
+    const dispatch = useDispatch();
 
     const ref = useRef(null);
   
@@ -82,7 +86,10 @@ const Line: React.FC<LineProps> = ({
             .on('click', onDelete);
         }
       }, [startX, startY, endX, endY, controlX, controlY, style, initialColor, selectedColor, isSelected]);
-    
+
+    const onDelete = () => {
+      dispatch(deleteLine(id))
+    }
     // El componente refiere a un contenedor SVG. La línea se dibujará dentro de este contenedor
     return <g ref={ref} />;
   };
