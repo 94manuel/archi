@@ -467,20 +467,7 @@ const UMLCanvas = () => {
   const toggZoomMode = () => {
     setIsZoomModeEnabled(!isZoomModeEnabled);
   };
-  // Función para manejar la adición de puntos de control a las líneas
-  const handleLineClick = (lineIndex: number) => {
-    const line: any = lines[lineIndex];
-    if (!line.controlX || !line.controlY) {
-      // Agrega un punto de control en el centro de la línea si no existe uno
-      const controlX = (line.startX + line.endX) / 2;
-      const controlY = (line.startY + line.endY) / 2 - 50; // Desplaza el control hacia arriba para crear una curva
-      const updatedLine = { ...line, controlX, controlY };
-      const updatedLines = [...lines];
-      updatedLines[lineIndex] = updatedLine;
 
-      dispatch(addLine(updatedLines));
-    }
-  };
   useEffect(() => {
     setIsLoading(true);
     fetch("/api/scantwo")
